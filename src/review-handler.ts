@@ -142,9 +142,10 @@ const cleanDecklist = (initialDecklist: string, playerCardId: string, cards: All
 };
 
 const getHero = (playerCardId: string, cards: AllCardsService): number => {
-	const playerClass = cards.getCard(playerCardId)?.playerClass;
+	const playerClass: string = cards.getCard(playerCardId)?.playerClass;
 	switch (playerClass) {
 		case 'DemonHunter':
+		case 'Demonhunter':
 			return 56550;
 		case 'Druid':
 			return 274;
