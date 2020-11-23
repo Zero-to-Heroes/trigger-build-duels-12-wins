@@ -93,6 +93,7 @@ export class ReviewHandler {
 			rating: firstGameInRun.playerRank,
 			runStartDate: toCreationDate(firstGameInRun.creationDate),
 		} as DeckStat;
+
 		const insertQuery = `
 			INSERT INTO duels_stats_deck 
 			(periodStart, playerClass, decklist, finalDecklist, heroCardId, heroPowerCardId, signatureTreasureCardId, treasuresCardIds, runId, wins, losses, rating, runStartDate)
@@ -115,6 +116,7 @@ export class ReviewHandler {
 		`;
 		console.log('running query', insertQuery);
 		await mysql.query(insertQuery);
+		await mysql.end();
 	}
 }
 
