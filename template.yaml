@@ -10,7 +10,7 @@ Resources:
         Properties:
             Handler: build-duels-top-run.default
             Runtime: nodejs10.x
-            Timeout: 20
+            Timeout: 2
             CodeUri: ./dist/build-duels-top-run
             MemorySize: 256
             # https://stackoverflow.com/questions/39144688/aws-lambda-invoke-not-calling-another-lambda-function-node-js
