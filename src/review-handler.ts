@@ -43,8 +43,8 @@ export class ReviewHandler {
 		const query = `
 			SELECT x1.creationDate, x1.playerClass, x1.playerCardId, x1.playerRank, x1.playerDecklist
 			FROM replay_summary x1 
-			INNER JOIN match_stats x3 ON x3.reviewId = x1.reviewId
-			WHERE x3.statValue = '${runId}'
+			INNER JOIN replay_summary_secondary_data t3 ON t3.reviewId = t1.reviewId
+			WHERE x3.duelsRunId = '${runId}'
 			AND x1.playerDecklist IS NOT null 
 			AND x1.additionalResult = '0-0'
 		`;
