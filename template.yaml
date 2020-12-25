@@ -10,7 +10,7 @@ Resources:
         Properties:
             Handler: build-duels-top-run.default
             Runtime: nodejs10.x
-            Timeout: 4
+            Timeout: 40
             CodeUri: ./dist/build-duels-top-run
             MemorySize: 192
             # https://stackoverflow.com/questions/39144688/aws-lambda-invoke-not-calling-another-lambda-function-node-js
@@ -25,7 +25,7 @@ Resources:
                 - AmazonSESFullAccess
                 - AmazonSNSReadOnlyAccess
                 - SecretsManagerReadWrite
-                - arn:aws:iam::478062583808:policy/CloudWatchPolicyForLambda # See https://stackoverflow.com/questions/51166504/disable-cloudwatch-to-monitor-logs-for-lambda-function
+                # - arn:aws:iam::478062583808:policy/CloudWatchPolicyForLambda # See https://stackoverflow.com/questions/51166504/disable-cloudwatch-to-monitor-logs-for-lambda-function
             Tags:
                 LambdaName: trigger-build-duels-12-wins
             Events:
