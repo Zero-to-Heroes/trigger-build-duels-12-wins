@@ -25,7 +25,7 @@ Resources:
                 - AmazonSESFullAccess
                 - AmazonSNSReadOnlyAccess
                 - SecretsManagerReadWrite
-                # - arn:aws:iam::478062583808:policy/CloudWatchPolicyForLambda # See https://stackoverflow.com/questions/51166504/disable-cloudwatch-to-monitor-logs-for-lambda-function
+                - arn:aws:iam::478062583808:policy/CloudWatchPolicyForLambda # See https://stackoverflow.com/questions/51166504/disable-cloudwatch-to-monitor-logs-for-lambda-function
             Tags:
                 LambdaName: trigger-build-duels-12-wins
             Events:
