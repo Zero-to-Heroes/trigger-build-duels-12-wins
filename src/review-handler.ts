@@ -41,17 +41,24 @@ export class ReviewHandler {
 		console.log('loot results', lootResults);
 
 		const query = `
-			SELECT x1.creationDate, x1.playerClass, x1.playerCardId, x1.playerRank, x1.playerDecklist
+			SELECT x1.creationDate, x1.playerClass, x1.playerCardId, x1.playerRank, x1.playerDecklist, x1.additionalResult
 			FROM replay_summary x1 
 			INNER JOIN replay_summary_secondary_data t3 ON t3.reviewId = x1.reviewId
 			WHERE t3.duelsRunId = '${runId}'
 			AND x1.playerDecklist IS NOT null 
-			AND x1.additionalResult = '0-0'
 		`;
 		console.log('running query', query);
-		const decksResults: readonly any[] = await mysql.query(query);
+		const allDecksResults: readonly any[] = await mysql.query(query);
 		console.log('decksResult');
 
+		// Discard the info if multiple classes are in the same run
+		const uniqueHeroes = [...new Set(allDecksResults.map(result => result.playerCardId))];
+		if (uniqueHeroes.length !== 1) {
+			console.error('corrupted run', runId, uniqueHeroes);
+			return;
+		}
+
+		const decksResults = allDecksResults.filter(result => result.additionalResult === '0-0');
 		if (!lootResults || lootResults.length === 0 || !decksResults || decksResults.length === 0) {
 			console.log('run info not present');
 			return;
