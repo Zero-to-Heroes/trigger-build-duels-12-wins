@@ -71,20 +71,23 @@ export class ReviewHandler {
 		}
 
 		const heroPowerNode = heroPowerNodes[0];
-		const firstGameInRun = decksResults[0];
 		const finalDecklist = message.playerDecklist;
 		const [wins, losses] = message.additionalResult.split('-').map(info => parseInt(info));
-		if (wins !== 11) {
+		if (wins < 10) {
 			console.error('invalid number of wins', message.additionalResult);
+			return null;
 		}
-		const periodDate = formatDate(new Date());
 
+		const firstGameInRun = decksResults[0];
+		console.log('firstGameInRun', firstGameInRun);
+		const periodDate = formatDate(new Date());
 		await cards.initializeCardsDb();
 		const decklist = cleanDecklist(firstGameInRun.playerDecklist, firstGameInRun.playerCardId, cards);
 		if (!decklist) {
 			console.log('invalid decklist', firstGameInRun.playerDecklist, firstGameInRun);
 			return null;
 		}
+
 		const stat = {
 			periodStart: periodDate,
 			playerClass: firstGameInRun.playerClass,
@@ -95,8 +98,8 @@ export class ReviewHandler {
 			signatureTreasureCardId: findSignatureTreasureCardId(lootResults, heroPowerNode.runId),
 			treasuresCardIds: findTreasuresCardIds(lootResults, heroPowerNode.runId),
 			runId: runId,
-			wins: wins + 1,
-			losses: losses,
+			wins: wins + (message.result === 'won' ? 1 : 0),
+			losses: losses + (message.result === 'lost' ? 1 : 0),
 			rating: firstGameInRun.playerRank,
 			runStartDate: toCreationDate(firstGameInRun.creationDate),
 		} as DeckStat;
