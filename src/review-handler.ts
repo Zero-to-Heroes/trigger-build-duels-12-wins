@@ -18,7 +18,6 @@ export class ReviewHandler {
 	}
 
 	private async buildStat(message: ReviewMessage) {
-		console.log('processing', message);
 		const runId = message.currentDuelsRunId;
 		if (!runId) {
 			console.error('runId empty', message);
@@ -36,9 +35,7 @@ export class ReviewHandler {
 			WHERE runId = '${runId}'
 			AND bundleType IN ('treasure', 'hero-power', 'signature-treasure') 
 		`;
-		console.log('running query', lootQuery);
 		const lootResults: readonly any[] = await mysql.query(lootQuery);
-		console.log('loot results', lootResults);
 
 		const query = `
 			SELECT x1.creationDate, x1.playerClass, x1.playerCardId, x1.playerRank, x1.playerDecklist, x1.additionalResult
@@ -47,9 +44,7 @@ export class ReviewHandler {
 			WHERE t3.duelsRunId = '${runId}'
 			AND x1.playerDecklist IS NOT null 
 		`;
-		console.log('running query', query);
 		const allDecksResults: readonly any[] = await mysql.query(query);
-		console.log('decksResult');
 
 		// Discard the info if multiple classes are in the same run
 		const uniqueHeroes = [...new Set(allDecksResults.map(result => result.playerCardId))];
@@ -60,13 +55,11 @@ export class ReviewHandler {
 
 		const decksResults = allDecksResults.filter(result => result.additionalResult === '0-0');
 		if (!lootResults || lootResults.length === 0 || !decksResults || decksResults.length === 0) {
-			console.log('run info not present');
 			return;
 		}
 
 		const heroPowerNodes = lootResults.filter(result => result.bundleType === 'hero-power');
 		if (heroPowerNodes.length !== 1 || decksResults.length !== 1) {
-			console.log('runs have been mixed up', heroPowerNodes, decksResults);
 			return;
 		}
 
@@ -79,12 +72,10 @@ export class ReviewHandler {
 		}
 
 		const firstGameInRun = decksResults[0];
-		console.log('firstGameInRun', firstGameInRun);
 		const periodDate = formatDate(new Date());
 		await cards.initializeCardsDb();
 		const decklist = cleanDecklist(firstGameInRun.playerDecklist, firstGameInRun.playerCardId, cards);
 		if (!decklist) {
-			console.log('invalid decklist', firstGameInRun.playerDecklist, firstGameInRun);
 			return null;
 		}
 
@@ -125,32 +116,25 @@ export class ReviewHandler {
 				'${stat.runStartDate}'
 			)
 		`;
-		console.log('running query', insertQuery);
 		await mysql.query(insertQuery);
 		await mysql.end();
 	}
 }
 
 const cleanDecklist = (initialDecklist: string, playerCardId: string, cards: AllCardsService): string => {
-	console.log('cleaning decklist', initialDecklist);
 	const decoded = decode(initialDecklist);
-	console.log('decoded', decoded);
 	const validCards = decoded.cards.filter(dbfCardId => cards.getCardFromDbfId(dbfCardId[0]).collectible);
 	if (validCards.length !== 15) {
 		console.error('Invalid deck list', initialDecklist, decoded);
 		return null;
 	}
-	console.log('valid cards', validCards);
 	const hero = getHero(playerCardId, cards);
-	console.log('hero', playerCardId, hero);
 	const newDeck: DeckDefinition = {
 		cards: validCards,
 		heroes: !hero ? decoded.heroes : [hero],
 		format: GameFormat.FT_WILD,
 	};
-	console.log('new deck', newDeck);
 	const newDeckstring = encode(newDeck);
-	console.log('new deckstring', newDeckstring);
 	return newDeckstring;
 };
 
