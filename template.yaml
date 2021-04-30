@@ -5,6 +5,37 @@ Transform: AWS::Serverless-2016-10-31
 Description: Build specific stats linked to reviews
 
 Resources:
+    DuelsProcessHighWinsQueue:
+        Type: AWS::SQS::Queue
+        Properties:
+            QueueName: duels-process-high-wins-queue
+            VisibilityTimeout: 601
+    DuelsProcessHighWinsSqsQueuePolicy:
+        Type: AWS::SQS::QueuePolicy
+        Properties:
+            PolicyDocument:
+                Version: '2012-10-17'
+                Id: DuelsProcessHighWinsQueuePolicy
+                Statement:
+                    - Sid: Allow-SNS-SendMessage
+                      Effect: Allow
+                      Principal:
+                          AWS: '*'
+                      Action:
+                          - sqs:SendMessage
+                      Resource: !GetAtt DuelsProcessHighWinsQueue.Arn
+                      Condition:
+                          ArnEquals:
+                              aws:SourceArn: arn:aws:sns:us-west-2:478062583808:review-published-duels-12-wins
+            Queues:
+                - !Ref DuelsProcessHighWinsQueue
+    SnsSubscription:
+        Type: AWS::SNS::Subscription
+        Properties:
+            Protocol: SQS
+            Endpoint: !GetAtt DuelsProcessHighWinsQueue.Arn
+            TopicArn: arn:aws:sns:us-west-2:478062583808:review-published-duels-12-wins
+
     ProcessDuelsHighWinsFunction:
         Type: AWS::Serverless::Function
         Properties:
@@ -26,4 +57,4 @@ Resources:
                 SQSEvent:
                     Type: SQS
                     Properties:
-                        Queue: arn:aws:sqs:us-west-2:478062583808:duels-high-wins-review-published-queue
+                        Queue: !GetAtt DuelsProcessHighWinsQueue.Arn
