@@ -1,9 +1,3 @@
-# Test it
-
-```
-npm run build && sam local invoke -t template.yaml -e event.json BuildGlobalStatsFunction
-```
-
 # Deploy
 
 ```
