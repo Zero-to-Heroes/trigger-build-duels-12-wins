@@ -40,8 +40,7 @@ export class ReviewHandler {
 		const query = `
 			SELECT x1.creationDate, x1.playerClass, x1.playerCardId, x1.playerRank, x1.playerDecklist, x1.additionalResult
 			FROM replay_summary x1 
-			INNER JOIN replay_summary_secondary_data t3 ON t3.reviewId = x1.reviewId
-			WHERE t3.duelsRunId = '${runId}'
+			WHERE x1.runId = '${runId}'
 			AND x1.playerDecklist IS NOT null 
 		`;
 		const allDecksResults: readonly any[] = await mysql.query(query);
