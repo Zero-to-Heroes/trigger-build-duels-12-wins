@@ -8,7 +8,10 @@ export default async (event): Promise<any> => {
 	const messages: readonly ReviewMessage[] = (event.Records as any[])
 		.map(event => JSON.parse(event.body))
 		.reduce((a, b) => a.concat(b), [])
-		.filter(event => event);
+		.filter(event => event)
+		.map(event => event.Message)
+		.filter(msg => msg)
+		.map(msg => JSON.parse(msg));
 	await new ReviewHandler().handle(messages);
 	return { statusCode: 200, body: null };
 };
