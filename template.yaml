@@ -26,7 +26,7 @@ Resources:
                       Resource: !GetAtt DuelsProcessHighWinsQueue.Arn
                       Condition:
                           ArnEquals:
-                              aws:SourceArn: arn:aws:sns:us-west-2:478062583808:review-published-duels-12-wins
+                              aws:SourceArn: arn:aws:sns:us-west-2:478062583808:duels-high-wins-review-published
             Queues:
                 - !Ref DuelsProcessHighWinsQueue
     SnsSubscription:
@@ -34,7 +34,7 @@ Resources:
         Properties:
             Protocol: SQS
             Endpoint: !GetAtt DuelsProcessHighWinsQueue.Arn
-            TopicArn: arn:aws:sns:us-west-2:478062583808:review-published-duels-12-wins
+            TopicArn: arn:aws:sns:us-west-2:478062583808:duels-high-wins-review-published
 
     ProcessDuelsHighWinsFunction:
         Type: AWS::Serverless::Function
