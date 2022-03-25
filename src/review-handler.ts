@@ -18,6 +18,7 @@ export class ReviewHandler {
 	}
 
 	private async buildStat(message: ReviewMessage) {
+		console.log('handling message', message);
 		const runId = message.currentDuelsRunId;
 		if (!runId) {
 			console.error('runId empty', message);
@@ -52,13 +53,13 @@ export class ReviewHandler {
 			return;
 		}
 
-		const decksResults = allDecksResults.filter(result => result.additionalResult === '0-0');
-		if (!lootResults || lootResults.length === 0 || !decksResults || decksResults.length === 0) {
+		const firstGameResult = allDecksResults.filter(result => result.additionalResult === '0-0');
+		if (!lootResults || lootResults.length === 0 || !firstGameResult || firstGameResult.length === 0) {
 			return;
 		}
 
 		const heroPowerNodes = lootResults.filter(result => result.bundleType === 'hero-power');
-		if (heroPowerNodes.length !== 1 || decksResults.length !== 1) {
+		if (heroPowerNodes.length !== 1 || firstGameResult.length !== 1) {
 			return;
 		}
 
@@ -70,7 +71,7 @@ export class ReviewHandler {
 			return null;
 		}
 
-		const firstGameInRun = decksResults[0];
+		const firstGameInRun = firstGameResult[0];
 		const periodDate = formatDate(new Date());
 		await cards.initializeCardsDb();
 		const decklist = cleanDecklist(firstGameInRun.playerDecklist, firstGameInRun.playerCardId, cards);
@@ -78,6 +79,8 @@ export class ReviewHandler {
 			return null;
 		}
 
+		const rating = allDecksResults.find(result => result.playerRank != null)?.playerRank;
+		console.log('rating', rating, allDecksResults);
 		const stat = {
 			periodStart: periodDate,
 			playerClass: firstGameInRun.playerClass,
@@ -90,7 +93,7 @@ export class ReviewHandler {
 			runId: runId,
 			wins: wins + (message.result === 'won' ? 1 : 0),
 			losses: losses + (message.result === 'lost' ? 1 : 0),
-			rating: firstGameInRun.playerRank,
+			rating: rating,
 			runStartDate: toCreationDate(firstGameInRun.creationDate),
 		} as DeckStat;
 

@@ -40,7 +40,7 @@ Resources:
         Type: AWS::Serverless::Function
         Properties:
             Handler: process-duels-high-wins.default
-            Runtime: nodejs10.x
+            Runtime: nodejs12.x
             CodeUri: ./dist/process-duels-high-wins
             MemorySize: 192
             Timeout: 40
