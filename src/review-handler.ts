@@ -19,6 +19,12 @@ export class ReviewHandler {
 
 	private async buildStat(message: ReviewMessage) {
 		console.log('handling message', message);
+		const useNewProcess = true;
+		if (useNewProcess) {
+			console.log('new process, returning');
+			return;
+		}
+
 		const runId = message.currentDuelsRunId;
 		if (!runId) {
 			console.error('runId empty', message);
